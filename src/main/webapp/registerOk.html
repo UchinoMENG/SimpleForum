@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册成功</title>
+    <script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+</head>
+<body>
+<h2>注册成功,请等待两秒钟，将会自动跳转到登录页面.......</h2>
+</body>
+<script>
+    $(function () {
+        $.post("/ssm-crud/registerOkDIs",function () {
+            location.href="login.html";
+        })
+    })
+</script>
+</html>

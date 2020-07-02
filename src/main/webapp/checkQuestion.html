@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>小小论坛</title>
+    <link href="css/content.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script>
+    <style>
+        .discuss{
+            position: relative;
+        }
+        .discuss p .p1{
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            font-size: 20px;
+            padding: 5px;
+            color: red;
+            display: block;
+        }
+        .discuss p.p2{
+            display: block;
+            position: absolute;
+            right: 0;
+            font-weight: bold;
+            font-size: 20px;
+            color: darkturquoise;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <img class="imges" src="images/header.png">
+</div>
+<div id="navigation">
+    <ul>
+        <li><a href="content.html">首页</a></li>
+        <li><a href="publicQuestion.html">发表新问题</a></li>
+        <li><a href="QuestionList.html">查看问题</a></li>
+        <li><a href="WatchQuestion.html">关注</a></li>
+    </ul>
+</div>
+<div id="content">
+    <h2 id="title"></h2>
+    <button type="button" class="buttonWatch">关注</button>
+    <p id="owner">发起人：</p>
+    <div class="discuss"></div>
+    <p id="start">请发表你的评论：</p>
+    <form>
+        <textarea class="input"></textarea>
+    </form>
+    <button class="buttondis" type="button">发表评论</button>
+</div>
+<script>
+    var te = "title="+$.cookie('title');
+    var ws= new WebSocket("ws://localhost/ssm-crud/webSocket?"+te);
+    ws.onopen = function () {
+        //alert("连接成功")
+    }
+    ws.onclose = function (ev) {
+        alert("连接取消")
+    }
+    ws.onerror = function (ev) {
+        alert("连接发生错误")
+    }
+    $(document).ready(function () {
+        $("#title").text($.cookie("title"));
+        $.ajax({
+            url:"/ssm-crud/titlePublisher",
+            type:"GET",
+            data:{"title":$.cookie("title")},
+            success:function (data) {
+                $("#owner").append(data['map']['object']['email'])
+            },
+            error:function (data) {
+                alert("获取发布人数据错误");
+            }
+        })
+        // flush();
+    })
+    ws.onmessage = function (ev) {
+        var strings = ev.data.split('&');
+        var self = $.cookie("user_email")
+        var email = strings[0].split('=')[1];
+        var val = strings[1].split('=')[1];
+        if (self==email){
+            $("div .discuss").append("<p class='p2'>" + email + "</p><br/>");
+            $("div .discuss").append("<p class='p2'>" + val + "</p><br/>");
+        }
+        else {
+            $("div .discuss").append("<p class='p1'>" + email + "</p><br/>");
+            $("div .discuss").append("<p class='p1'>" + val + "</p><br/>");
+        }
+    }
+    //进入页面刷新页面内容
+    $(document).ready(function () {
+        $.ajax({
+            url:"/ssm-crud/titleContext",
+            type:"GET",
+            data:{"title":$.cookie("title")},
+            success:function (data) {
+                if (data.flag) {
+                    var d = data['map']['object'];
+                    var et = $.cookie("user_email")
+                    for (var i in d) {
+                        if (d[i]["email"] == et) {
+                            $("div .discuss").append("<p class='p2'>" + d[i]["email"] + ":" + "</p><br/>");
+                            $("div .discuss").append("<p class='p2'>" + d[i]["user_text"] + "</p><br/>");
+                        }
+                        else {
+                            $("div .discuss").append("<p class='p1'>" + d[i]["email"] + "</p><br/>");
+                            $("div .discuss").append("<p class='p1'>" + d[i]["user_text"] + "</p><br/>");
+                        }
+                    }
+                }
+                // alert(data['map']['object']['email']);
+                // alert(data['map']['object']['user_text'])
+            },
+            error:function () {
+                alert("刷新页面时，发生错误")
+            }
+        })
+    })
+    
+    //关注
+    $(document).ready(function () {
+        $.ajax({
+            url:"/ssm-crud/watchTitleCheck",
+            type:"POST",
+            data:{
+                "title":$.cookie("title"),
+                "email":$.cookie("user_email")
+            },
+            success:function (data) {
+                if (data.flag){
+                    $(".buttonWatch").text("已关注");
+                    $(".buttonWatch").css("background-color", "green");
+                }
+                else{
+                    $(".buttonWatch").text("关注");
+                    $(".buttonWatch").css("background-color","white");
+                }
+            }
+        })
+        // $.post("checkWatchedServlet",{"title":$.cookie("title"),"email":$.cookie("user_email")},function (data) {
+        //     if (data=="true"){
+        //         $(".buttonWatch").text("已关注");
+        //         $(".buttonWatch").css("background-color", "green");
+        //     }
+        // })
+    })
+    //提交按钮,并且发送数据
+    $(".buttondis").click(function () {
+        var value = $("textarea").val();
+        // alert($("textarea").val());
+        var self = $.cookie("user_email")
+        var data = "email="+self+"&value="+value;
+        ws.send(data)
+    })
+    //关注按钮
+    $(".buttonWatch").click(function () {
+        if ($(this).text()=="关注"){
+            $(this).text("已关注");
+            $(this).css("background-color", "green");
+            $.ajax({
+                type:"POST",
+                url:"/ssm-crud/checkSubmit",
+                data:{
+                    _method : "PUT",
+                    "title":$.cookie("title"),
+                    "email":$.cookie("user_email")
+                },
+                success:function (data) {
+
+                },
+                error:function () {
+                    alert("服务器内部发生错误");
+                }
+            })
+            // $.post("clickaServlet", {"title": $.cookie("title")}, function () {
+            // });
+        }
+        else{
+            $(this).text("关注");
+            $(this).css("background-color","white");
+            $.ajax({
+                url:"/ssm-crud/checkSubmit",
+                type:"POST",
+                data:{
+                    _method : "DELETE",
+                    "title":$.cookie("title"),
+                    "email":$.cookie("user_email")},
+                success:function (data) {
+
+                },
+                error:function () {
+                    alert("服务器内部发生错误");
+                }
+            })
+            // $.post("clickgreenServlet", {"title": $.cookie("title")}, function () {
+            // });
+        }
+    })
+    // function flush() {
+    //     $.post("flushPageServlet",{"title":$.cookie("title")},function (data) {
+    //         if (data.flag){
+    //             var d = data["object"];
+    //             var et = $.cookie("user_email")
+    //             for (var i in d){
+    //                 if (d[i]["email"]==et) {
+    //                     $("div .discuss").append("<p class='p1'>" + d[i]["email"] +":"+ "</p><br/>");
+    //                     $("div .discuss").append("<p class='p1'>" + d[i]["contentText"] + "</p><br/>");
+    //                 }
+    //                 else{
+    //                     $("div .discuss").append("<p class='p2'>" + d[i]["email"] + "</p><br/>");
+    //                     $("div .discuss").append("<p class='p2'>" + d[i]["contentText"] + "</p><br/>");
+    //                 }
+    //             }
+    //         }
+    //     })
+    // }
+</script>
+</body>
+</html>

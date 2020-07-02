@@ -1,0 +1,108 @@
+
+*{
+    margin: 0px;
+    padding: 0px;
+}
+body {
+    background: url("../images/爱梨.jpg") no-repeat fixed;
+    background-size: 100% 100%;
+}
+.header{
+    height: 64px;
+}
+#navigation{
+    position: fixed;
+    width: 200px;
+    height: 500px;
+    background-color: rgba(0,255,255,.5);
+}
+#navigation a{
+    font-size: 24px;
+    margin: 20px;
+    text-decoration: none;
+}
+#navigation a:hover{
+    color: red;
+    font-style: oblique;
+}
+#navigation ul{
+    list-style-type:none ;
+}
+li{
+    padding: 20px;
+    /*margin: 20px;*/
+}
+#content{
+    display: block;
+    position: absolute;
+    width: 1000px;
+    height:1000px;
+    left: 200px;
+    background-color: rgba(127,255,212,.5);
+}
+#content p#owner{
+    position: relative;
+    display: block;
+    left:20px;
+    top:0px;
+    font-size: 15px;
+    color: red;
+}
+#content p#start{
+    margin: 10px auto;
+    opacity: 50%;
+    font-size: 15px;
+    font-weight: bold;
+}
+#content h2{
+    text-align: center;
+}
+.discuss{
+    width: 900px;
+    height: 700px;
+    margin: 10px auto;
+    border: 3px solid;
+    background-color: rgba(255,255,255,.5);
+
+}
+#content .buttonWatch{
+    position: absolute;
+    margin: 5px;
+    padding: 5px;
+    right:0px;
+    top: 0px;
+    background-color: white;
+}
+.input{
+    display: block;
+    width: 900px;
+    height: 50px;
+    margin: 10px auto;
+    border: 3px solid;
+    font-size: 20px;
+    font-weight: bolder;
+    opacity: .5;
+    overflow: visible;
+}
+#content .buttondis{
+    position: relative;
+    left: 50%;
+    padding: 5px;
+}
+#questions{
+    width: 800px;
+    height: 600px;
+    margin: 20px auto;
+    background-color: rgba(250,230,215,.5);
+    opacity: 50%;
+}
+#questions a{
+    text-decoration: none;
+    text-align: center;
+    opacity: 50%;
+    font-size: 20px;
+    font-weight: bolder;
+}
+#questions a:hover{
+    text-decoration: black;
+}

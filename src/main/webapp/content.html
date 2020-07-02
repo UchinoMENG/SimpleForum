@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>小小论坛</title>
+    <link href="css/content.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script>
+    <style>
+        #questions p{
+            cursor: pointer;
+            display: block;
+            text-align: center;
+            color: black;
+            margin: 25px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <img class="imges" src="images/header.png">
+</div>
+<div id="navigation">
+    <ul>
+        <li><a href="content.html">首页</a></li>
+        <li><a href="publicQuestion.html">发表新问题</a></li>
+        <li><a href="QuestionList.html">查看问题</a></li>
+        <li><a href="WatchQuestion.html">关注</a></li>
+    </ul>
+</div>
+<div id="content">
+    <h2 id="title">欢迎来到论坛</h2>
+    <div class="discuss">
+        <div id="questions">
+        </div>
+    </div>
+</div>
+<script>
+    //文章点击
+    function pthing(id) {
+        $("p").click(function(){
+            $.cookie("title",$(id).text(),'/');
+            location.href = "checkQuestion.html";
+        });
+    }
+    //取cookie
+    $(document).ready(function () {
+        var temp = $.cookie('user_email');
+        $("#title").append("<p style='font-weight: bold;'>"+temp+"</p>")
+    })
+    $(document).ready(function () {
+        $.ajax({
+            url:"/ssm-crud/title",
+            type:"GET",
+            success:function (data) {
+                var data_temp = data['map']["object"];
+                // alert(data_temp)
+                for (var i in data_temp){
+                    // alert(data_temp[i].titleName)
+                    $("#questions").append("<p onclick='pthing(this)'>"+data_temp[i].titleName+"</p>");
+                }
+            }
+        })
+        // $.get("contentServlet",function (data) {
+        //     var data_temp = data["object"];
+        //     for (var i in data_temp){
+        //         $("#questions").append("<p onclick='pthing(this)'>"+data_temp[i].question+"</p>");
+        //     }
+        // })
+    })
+
+</script>
+</body>
+</html>

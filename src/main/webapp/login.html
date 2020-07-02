@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册登录</title>
+    <link href="css/login.css" rel="stylesheet" type="text/css">
+    <link href="images/header.png" rel="icon" type="image/x-icon" />
+    <link href="images/header.png" rel="shortcut icon" type="image/x-icon">
+    <script type="text/javascript" src="js/login.js"></script>
+    <script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script>
+    <script src="static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <link href="static/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+
+    </style>
+</head>
+<body>
+<div class="header">
+    <img class="imges" src="images/header.png">
+</div>
+<div class="left">
+    <div class="content">
+        <div class="left_content">
+            <div id="fill" onMouseOver="changeBack(this)" onMouseOut="changePre(this)"></div>
+        </div>
+        <div class="right_content">
+            <a href="#">了解相关</a>
+            <form id="loginWindow" method="post" action="user">
+                <div class="formgroup">
+                    <!--<div class="input-group">-->
+                        <!--<span class="input-group-addon" id="basic-addon1">邮箱</span>-->
+                        <!--<input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1">-->
+                        <!--<p id = "emailerror">你输入的邮箱格式不正确，请确认您的邮箱地址</p>-->
+                    <!--</div>-->
+                    <!--<div class="input-group">-->
+                        <!--<scan class="input-group-addon" id="basic-addon2">密码</scan>-->
+                        <!--<input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon2">-->
+                        <!--<p id ="passwordInfo">您输入的密码不正确</p>-->
+                    <!--</div>-->
+                    <div class="input-group">
+                        邮箱：<scan class="glyphicon glyphicon-envelope" aria-hidden="true"></scan><input id="email" class="kuang" type="email" name="email" placeholder="请输入你的邮箱地址" onblur="emailblur(this)" onfocus="emailTemp(this)">
+                        <p id = "emailerror">你输入的邮箱格式不正确，请确认您的邮箱地址</p>
+                        密码：<scan class="glyphicon glyphicon-lock" aria-hidden="true"></scan><input id="password" class="kuang" type="password" name="password" placeholder="请输入你的密码" onblur="passwordHide(this)" onfocus="passwordFocus(this)">
+                        <p id ="passwordInfo">您输入的密码格式不正确</p>
+                    </div>
+                </div>
+                <input id="register" type="submit" class="buttonDL" name="NewUser" value="注册">
+            </form>
+            <button class="buttonDL" type="submit">登录</button>
+        </div>
+    </div>
+</div>
+<script>
+    <!--进行注册-->
+    $(function(){
+        $("form").submit(function(){
+            if (checkEmail()&&checkpassword()){
+                /*.serialize方法将表单内容转化为get请求的字符串格式*/
+                $.ajax({
+                    url:"/ssm-crud/user",
+                    type:"POST",
+                    data:$(this).serialize(),
+                    success:function (data) {
+                        if (!data.flag) {
+                            $("#emailerror").text(data.msg).show();
+                        }
+                        else{
+                            location.href = "registerOk.html";
+                        }
+                    }
+                })
+            }
+            return false;
+        });
+    });
+    <!--进行登录-->
+    $(function(){
+        $("button").click(function(){
+            // alert("button执行了");
+            if (checkEmail()&&checkpassword()){
+                // alert("检查执行了");
+                /*.serialize方法将表单内容转化为get请求的字符串格式*/
+                $.ajax({
+                    url:"/ssm-crud/user",
+                    type:"GET",
+                    data:$("form").serialize(),
+                    success:function (data) {
+                        if (!data.flag) {
+                            $("#emailerror").text(data.msg).show();
+                        }
+                        else{
+                            $.cookie("user_email",$("#email").val(),'/');
+                            location.href = "content.html";
+                        }
+                    }
+                })
+            }
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

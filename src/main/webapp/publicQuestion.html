@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>小小论坛</title>
+    <link href="css/content.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script>
+    <link href="static/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <style>
+        #sub a{
+            width: 65px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <img class="imges" src="images/header.png">
+</div>
+<div id="navigation">
+    <ul>
+        <li><a href="content.html">首页</a></li>
+        <li><a href="publicQuestion.html">发表新问题</a></li>
+        <li><a href="QuestionList.html">查看问题</a></li>
+        <li><a href="WatchQuestion.html">关注</a></li>
+    </ul>
+</div>
+<div id="content">
+    <h2 id="title">欢迎来到论坛</h2>
+    <form method="post">
+        <textarea id="subContext" class="input" name="title"></textarea>
+    </form>
+    <div id="sub">
+        <a tabindex="0" class="btn btn-lg btn-success center-block" role="button" data-toggle="popover"
+           data-trigger="focus" title="警告"
+           data-content="">提交</a>
+    </div>
+</div>
+<script>
+    function checkTitle(){
+        var text=/^-?[0-9]+(.[0-9]+)?$/;
+        var is = text.test($("textarea").val());
+        return is;
+    }
+    $(document).ready(function () {
+        $("div a").click(function () {
+            if (checkTitle()){
+                $('#sub a').attr('data-content','论坛名字不能为数字').popover('show');
+            }
+            else {
+                $.cookie("title", $("textarea").val(), '/');
+                $.ajax({
+                    url: "/ssm-crud/title",
+                    type: "POST",
+                    data: {"email":$.cookie("user_email"),"title":$("textarea").val()},
+                    success: function (data) {
+                        if (data.flag) {
+                            $.cookie("title", $("textarea").val(), '/');
+                            location.href = "checkQuestion.html";
+                        }
+                        else {
+                            $('#sub a').attr('data-content', '论坛名字重复').popover('show')
+                        }
+                    }
+                })
+            }
+        })
+
+    })
+</script>
+</body>
+</html>
